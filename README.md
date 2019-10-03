@@ -1,2 +1,3 @@
-# react-node-ecommerce
- ecommerce
+Byrja á npm init -y
+
+næst npm i express dotenv nodemon
