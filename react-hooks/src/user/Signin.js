@@ -1,18 +1,19 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Redirect } from "react-router-dom";
 import Layout from "../core/Layout";
-import { signup } from "../auth";
+import { signin, authenticate, isAuthenticated } from "../auth";
 
-const Signup = () => {
+const Signin = () => {
     const [values, setValues] = useState({
-        name: "",
         email: "",
         password: "",
         error: "",
-        success: false
+        loading: false,
+        redirectToReferrer: false
     });
 
-    const { name, email, password, success, error } = values;
+    const { email, password, loading, error, redirectToReferrer } = values;
+    const { user } = isAuthenticated();
 
     const handleChange = name => event => {
         setValues({ ...values, error: false, [name]: event.target.value });
@@ -20,18 +21,16 @@ const Signup = () => {
 
     const clickSubmit = event => {
         event.preventDefault();
-        setValues({ ...values, error: false });
-        signup({ name, email, password }).then(data => {
+        setValues({ ...values, error: false, loading: true });
+        signin({ email, password }).then(data => {
             if (data.error) {
-                setValues({ ...values, error: data.error, success: false });
+                setValues({ ...values, error: data.error, loading: false });
             } else {
-                setValues({
-                    ...values,
-                    name: "",
-                    email: "",
-                    password: "",
-                    error: "",
-                    success: true
+                authenticate(data, () => {
+                    setValues({
+                        ...values,
+                        redirectToReferrer: true
+                    });
                 });
             }
         });
@@ -39,16 +38,6 @@ const Signup = () => {
 
     const signUpForm = () => (
         <form>
-            <div className="form-group">
-                <label className="text-muted">Name</label>
-                <input
-                    onChange={handleChange("name")}
-                    type="text"
-                    className="form-control"
-                    value={name}
-                />
-            </div>
-
             <div className="form-group">
                 <label className="text-muted">Email</label>
                 <input
@@ -83,26 +72,38 @@ const Signup = () => {
         </div>
     );
 
-    const showSuccess = () => (
-        <div
-            className="alert alert-info"
-            style={{ display: success ? "" : "none" }}
-        >
-            New account is created. Please <Link to="/signin">Signin</Link>
-        </div>
-    );
+    const showLoading = () =>
+        loading && (
+            <div className="alert alert-info">
+                <h2>Loading...</h2>
+            </div>
+        );
+
+    const redirectUser = () => {
+        if (redirectToReferrer) {
+            if (user && user.role === 1) {
+                return <Redirect to="/admin/dashboard" />;
+            } else {
+                return <Redirect to="/user/dashboard" />;
+            }
+        }
+        if (isAuthenticated()) {
+            return <Redirect to="/" />;
+        }
+    };
 
     return (
         <Layout
-            title="Signup"
-            description="Signup to Node React E-commerce App"
+            title="Signin"
+            description="Signin to Node React E-commerce App"
             className="container col-md-8 offset-md-2"
         >
-            {showSuccess()}
+            {showLoading()}
             {showError()}
             {signUpForm()}
+            {redirectUser()}
         </Layout>
     );
 };
 
-export default Signup;
+export default Signin;

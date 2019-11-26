@@ -57,7 +57,7 @@ const Dashboard = () => {
     return (
         <Layout
             title="Dashboard"
-            description={`Good day ${name}`}
+            description={`G'day ${name}!`}
             className="container-fluid"
         >
             <div className="row">
