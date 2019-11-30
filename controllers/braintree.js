@@ -40,3 +40,19 @@ exports.processPayment = (req, res) => {
         }
     );
 };
+
+const getToken = (userId, token) => {
+    getBraintreeClientToken(userId, token).then(data => {
+        if (data.error) {
+            console.log(data.error);
+            setData({ ...data, error: data.error });
+        } else {
+            console.log(data); // make sure you get data
+            setData({ clientToken: data.clientToken });
+        }
+    });
+};
+
+useEffect(() => {
+    getToken(userId, token);
+}, []);
