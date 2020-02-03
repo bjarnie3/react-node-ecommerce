@@ -28,6 +28,11 @@ const AdminDashboard = () => {
                             View Orders
                         </Link>
                     </li>
+                    <li className="list-group-item">
+                        <Link className="nav-link" to="/admin/products">
+                            Manage Products
+                        </Link>
+                    </li>
                 </ul>
             </div>
         );
@@ -51,7 +56,7 @@ const AdminDashboard = () => {
     return (
         <Layout
             title="Dashboard"
-            description={`Góðan dag ${name}!`}
+            description={`G'day ${name}!`}
             className="container-fluid"
         >
             <div className="row">
